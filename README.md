@@ -49,12 +49,13 @@ cd mcp-demo-setup
 ./install.sh
 ```
 
-`install.sh` creates a `FLO26` directory next to this repo, clones the three workshop repositories into it, and copies the deploy and destroy scripts there:
+`install.sh` creates a `FLO26` directory next to this repo, clones the three workshop repositories into it, and copies the scripts there:
 
 ```text
 FLO26/
 ├── main_deploy.sh
 ├── main_destroy.sh
+├── nginx_url.sh              local URL for the nginx app (port-forward)
 ├── mcp-server-deployments/   MCP server code + ECR image build
 ├── mcp-server-terraform/     VPC, EKS, ECS, load balancer, nginx workload
 └── mcp-client/               connects Claude Desktop to the MCP server
@@ -151,6 +152,18 @@ Try:
 
 > List the pods in the application namespace.
 
+### Watch the app
+
+At the end, `main_deploy.sh` also starts a port-forward to nginx, so you can open the app at **http://localhost:8081** and watch it go working → broken → working during the demo. It reconnects by itself whenever the pod is replaced, for example after a restart, scale, rollback or reset. From the `FLO26` directory:
+
+```bash
+./nginx_url.sh status   # running? and the HTTP code right now (200 = working)
+./nginx_url.sh start    # start it again, e.g. in a new terminal or after your credentials expired
+./nginx_url.sh stop     # stop it
+```
+
+When a fault is injected, the page shows "can't connect" (no pod) or "403 Forbidden" (readiness fault), and comes back after the fix once the new pod is ready. On Fargate a new pod takes 1 to 4 minutes. Problems are logged to `nginx_url.log`. To use another port, set `NGINX_LOCAL_PORT`.
+
 ## 5. Destroy
 
 When you're done, remove everything so it stops costing money. From the `FLO26` directory:
@@ -159,7 +172,7 @@ When you're done, remove everything so it stops costing money. From the `FLO26` 
 ./main_destroy.sh
 ```
 
-It asks you to type `destroy`, removes the `aiops-eks` entry from Claude Desktop, then destroys the infrastructure and the ECR repositories. It takes about 15 to 20 minutes.
+It asks you to type `destroy`, stops the nginx port-forward, removes the `aiops-eks` entry from Claude Desktop, then destroys the infrastructure and the ECR repositories. It takes about 15 to 20 minutes.
 
 - `./main_destroy.sh --keep-images` keeps the ECR images, so the next deploy is faster.
 - `./main_destroy.sh --yes` skips the confirmation prompt.

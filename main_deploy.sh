@@ -38,4 +38,9 @@ echo "ECS service is stable."
 banner "3/3 Claude Desktop connection"
 "$ROOT_DIR/mcp-client/deploy.sh"
 
+banner "nginx app URL"
+if [[ -x "$ROOT_DIR/nginx_url.sh" ]]; then
+  "$ROOT_DIR/nginx_url.sh" start || echo "Could not start the port-forward; run ./nginx_url.sh start later."
+fi
+
 banner "All done"

@@ -55,6 +55,11 @@ if ! $ASSUME_YES; then
   [[ "$answer" == "destroy" ]] || { echo "Cancelled."; exit 1; }
 fi
 
+# Stop the demo port-forward first; the cluster it points at is about to go away.
+if [[ -x "$ROOT_DIR/nginx_url.sh" ]]; then
+  "$ROOT_DIR/nginx_url.sh" stop || true
+fi
+
 banner "1/3 Claude Desktop configuration"
 if claude_running; then
   # Claude Desktop rewrites its config from memory while running, so an edit now would be lost.

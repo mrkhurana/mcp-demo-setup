@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Set up the AI Ops MCP workshop: creates a FLO26 directory next to this repo, clones the three
-# workshop repositories into it, and copies main_deploy.sh and main_destroy.sh there.
+# workshop repositories into it, and copies main_deploy.sh, main_destroy.sh and nginx_url.sh there.
 #
 #   ./install.sh                       creates ../FLO26 (next to this repo)
 #   FLO26_DIR=~/work/FLO26 ./install.sh
@@ -57,8 +57,8 @@ for entry in "${REPOS[@]}"; do
   fi
 done
 
-step "Copying main_deploy.sh and main_destroy.sh"
-for script in main_deploy.sh main_destroy.sh; do
+step "Copying main_deploy.sh, main_destroy.sh and nginx_url.sh"
+for script in main_deploy.sh main_destroy.sh nginx_url.sh; do
   cp "$SCRIPT_DIR/$script" "$FLO26_DIR/$script"
   chmod +x "$FLO26_DIR/$script"
   ok "$FLO26_DIR/$script"
